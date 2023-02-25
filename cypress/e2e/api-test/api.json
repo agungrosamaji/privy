@@ -1,0 +1,6 @@
+{
+    "register_by_phone": "http://pretest-qa.dcidev.id/api/v1/register",
+    "register_resend_otp": "http://pretest-qa.dcidev.id/api/v1/register/otp/request",
+    "register_matching_otp": "http://pretest-qa.dcidev.id/api/v1/register/otp/match",
+    "register_remove_account": "http://pretest-qa.dcidev.id/api/v1/register/remove"
+}

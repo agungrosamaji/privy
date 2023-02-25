@@ -7,11 +7,11 @@ describe('API Testing ', function () {
     let accesstoken
 
     //register using phone number has not registered
-    it('API - POST Register', () => {
+    it('API - POST Register 1', () => {
         cy.request({
             method: 'POST',
             url: `${api.register_by_phone}`,
-            failOnStatusCode: true,
+            failOnStatusCode: false,
             body: {
                 'phone' : `${users.new_phone}`,
                 'password' : '123456',
@@ -22,24 +22,24 @@ describe('API Testing ', function () {
             }
         }).as('details')
         //Validate Status Code
-        cy.get('@details').its('status').should('eq', 201)
-        cy.get('@details').then((response) => {
-            let res = response.body
-            let post_sugar_id = res.sugar_id
-            let userid = res.id
-            cy.log(post_sugar_id)
-        })
         cy.get('@details').then((response) => {
             cy.log(JSON.stringify(response.body))
         })
+        cy.get('@details').its('status').should('eq', 201)
+        cy.get('@details').then((response) => {
+            let res = response.body
+            userid = res.data.user.id
+            cy.log(userid)
+        })
+        
     })
 
     //register using phone number has registered
-    it('API - POST Register', () => {
+    it('API - POST Register 2', () => {
         cy.request({
             method: 'POST',
             url: `${api.register_by_phone}`,
-            failOnStatusCode: true,
+            failOnStatusCode: false,
             body: {
                 'phone' : `${users.registered_phone}`,
                 'password' : '123456',
@@ -57,11 +57,11 @@ describe('API Testing ', function () {
     })
 
     //resend otp by phone number
-    it('API Post - POST Resend OTP', () => {
+    it('API Post - POST Resend OTP 1', () => {
         cy.request({
             method: 'POST',
-            url: `${config.register_resend_otp}`,
-            failOnStatusCode: true,
+            url: `${api.register_resend_otp}`,
+            failOnStatusCode: false,
             body: {
                 'phone' : `${users.new_phone}`
             }
@@ -69,21 +69,16 @@ describe('API Testing ', function () {
         //Validate status code
         cy.get('@details').its('status').should('eq', 201)
         cy.get('@details').then((response) => {
-            let res = response.body
-            let post_sugar_id = res.sugar_id
-            cy.log(post_sugar_id)
-        })
-        cy.get('@details').then((response) => {
             cy.log(JSON.stringify(response.body))
         })
     })
 
     //resend otp by phone number is not registered
-    it('API Post - POST Resend OTP', () => {
+    it('API Post - POST Resend OTP 2', () => {
         cy.request({
             method: 'POST',
-            url: `${config.register_resend_otp}`,
-            failOnStatusCode: true,
+            url: `${api.register_resend_otp}`,
+            failOnStatusCode: false,
             body: {
                 'phone' : `${users.new_phone}`
             }
@@ -96,78 +91,82 @@ describe('API Testing ', function () {
     })
 
     //Input true OTP code for verification phone number
-    it('API Post - POST Matching OTP', () => {
+    it('API Post - POST Matching OTP 1', () => {
         cy.request({
             method: 'POST',
-            url: `${config.register_matching_otp}`,
-            failOnStatusCode: true,
+            url: `${api.register_matching_otp}`,
+            failOnStatusCode: false,
             body: {
-                'user_id ' : userid,
-                'otp_code ' : '1234' 
+                //'user_id' : userid,
+                'user_id' : `${users.registered_user_id}`,
+                'otp_code' : '1234' 
             }
         }).as('details')
         //Validate status code
+        cy.get('@details').then((response) => {
+            cy.log(JSON.stringify(response.body))
+        })
         cy.get('@details').its('status').should('eq', 201)
         cy.get('@details').then((response) => {
             let res = response.body
-            accesstoken = res.access_token
+            accesstoken = res.data.user.access_token
+            cy.log(accesstoken)
         })
-        cy.get('@details').then((response) => {
-            cy.log(JSON.stringify(response.body))
-        })
+        
     })
 
     //Input false user_id code for verification phone number
-    it('API Post - POST Matching OTP', () => {
+    it('API Post - POST Matching OTP 2', () => {
         cy.request({
             method: 'POST',
-            url: `${config.register_matching_otp}`,
-            failOnStatusCode: true,
+            url: `${api.register_matching_otp}`,
+            failOnStatusCode: false,
             body: {
-                'user_id ' : `${users.unregistered_user_id}`,
-                'otp_code ' : '1234' 
+                'user_id' : `${users.unregistered_user_id}`,
+                'otp_code' : '1234' 
             }
         }).as('details')
         //Validate status code
-        cy.get('@details').its('status').should('eq', 500)
         cy.get('@details').then((response) => {
             cy.log(JSON.stringify(response.body))
         })
+        cy.get('@details').its('status').should('eq', 500)
     })
     
     //Input phone number is registered
-    it('API Post - POST Remove Account', () => {
+    it('API Post - POST Remove Account 1', () => {
         cy.request({
             method: 'POST',
-            url: `${config.register_remove_account}`,
-            failOnStatusCode: true,
+            url: `${api.register_remove_account}`,
+            failOnStatusCode: false,
             body: {
-                'phone ' : `${users.remove_phone_number}`
+                'phone' : `${users.remove_phone_number}`
                 // 'phone ' : `${users.new_phone}`
             }
         }).as('details')
         //Validate status code
-        cy.get('@details').its('status').should('eq', 201)
         cy.get('@details').then((response) => {
             cy.log(JSON.stringify(response.body))
         })
+        cy.get('@details').its('status').should('eq', 201)
+        
     })
 
     //Input phone number is registered
-    it('API Post - POST Remove Account', () => {
+    it('API Post - POST Remove Account 2', () => {
         cy.request({
             method: 'POST',
-            url: `${config.register_remove_account}`,
-            failOnStatusCode: true,
+            url: `${api.register_remove_account}`,
+            failOnStatusCode: false,
             body: {
-                'phone ' : `${users.unremovable_phone_number}`
+                'phone' : `${users.unremovable_phone_number}`
                 // 'phone ' : `${users.new_phone}`
             }
         }).as('details')
         //Validate status code
-        cy.get('@details').its('status').should('eq', 500)
         cy.get('@details').then((response) => {
             cy.log(JSON.stringify(response.body))
         })
+        cy.get('@details').its('status').should('eq', 500)
     })
 })
